@@ -84,6 +84,18 @@ public class RedBlackBST {
 		}
 		return x;
 	}
+
+	public RedBlackBST find(int content) {
+		RedBlackBST node = this;
+		while(node != null && node.key != content) {
+			if(content < node.key) {
+				node = node.left;
+			} else {
+				node = node.right;
+			}
+		}
+		return node;
+	}
 	
 	private void rotateLeft() {
 		RedBlackBST x = this;
