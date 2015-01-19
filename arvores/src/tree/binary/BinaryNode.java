@@ -27,12 +27,14 @@ public class BinaryNode<T> {
 		return left;
 	}
 	public void setLeft(BinaryNode<T> left) {
+		left.parent = this;
 		this.left = left;
 	}
 	public BinaryNode<T> getRight() {
 		return right;
 	}
 	public void setRight(BinaryNode<T> right) {
+		right.parent = this;
 		this.right = right;
 	}
 	

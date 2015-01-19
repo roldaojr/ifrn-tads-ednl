@@ -29,6 +29,14 @@ public class BST {
 	public BST getRight() {
 		return right;
 	}
+	public void setLeft(BST node) {
+		node.parent = this;
+		this.left = node;
+	}
+	public void setRight(BST node) {
+		node.parent = this;
+		this.right = node;
+	}	
 
 	public BST find(int content) {
 		BST node = this;
