@@ -1,7 +1,9 @@
 package edu.ifrn.tads.ednl;
 	
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +23,8 @@ public class Grafo {
 		}
 		return ves;
 	}
-	public Vertice oposto(Vertice v, Aresta a) throws Exception {
+
+	public Vertice oposto(Vertice v, Aresta a) {
 		for(Vertice ve: incidencia.keySet()) {
 			if(v.equals(ve)) continue;
 			Set<Aresta> as = incidencia.get(ve);
@@ -29,7 +32,7 @@ public class Grafo {
 				return ve;
 			}
 		}
-		throw new Exception("N�o foi possivel encontrar oposto de vertice");
+		return null;
 	}
 	public boolean eAdjacente(Vertice v, Aresta w) {
 		Set<Aresta> arestas;
@@ -39,7 +42,7 @@ public class Grafo {
 	public void substituir(Vertice v, Object x) {
 		v.valor = x;
 	}
-	public void substituir(Aresta a, Object x) {
+	public void substituir(Aresta a, int x) {
 		a.valor = x;
 	}
 	public Vertice inserirVertice(Object x) {
@@ -47,7 +50,7 @@ public class Grafo {
 		incidencia.put(v, new HashSet<>());
 		return v;
 	}
-	public Aresta inserirAresta(Vertice v, Vertice w, Object x) {
+	public Aresta inserirAresta(Vertice v, Vertice w, int x) {
 		Aresta a = new Aresta(x);
 		incidencia.get(v).add(a);
 		incidencia.get(w).add(a);
@@ -66,6 +69,13 @@ public class Grafo {
 	public Set<Aresta> arestasIncidentes(Vertice v) {
 		return incidencia.get(v);
 	}
+	public Set<Vertice> verticesAdjacentes(Vertice v) {
+		Set<Vertice> result = new HashSet<>();
+		for(Aresta as: arestasIncidentes(v)) {
+			result.add(oposto(v, as));
+		}
+		return result;
+	}
 	public Set<Vertice> vertices() {
 		return incidencia.keySet();
 	}
@@ -75,5 +85,61 @@ public class Grafo {
 			arestas.addAll(as);
 		}
 		return arestas;
+	}
+	public Map<Vertice, Integer> distanciaDfs(Vertice v) {
+		// marcar todos como não visitado
+		for(Vertice w: vertices()) {
+			w.visitado = 0;
+		}
+		// Guardar as distancias
+		Map<Vertice, Integer> distancias = new HashMap<>();
+		distancias.put(v, 0);
+		for(Vertice w: vertices()) {
+			if(v.visitado == 0) {
+				distancias.put(w, distanciaDfsVertices(v, w));
+			}
+		}
+		return distancias;
+	}
+	private int distanciaDfsVertices(Vertice v, Vertice w) {
+		v.visitado = -1;
+		if(v.equals(w)) return 0;
+		for(Aresta as: arestasIncidentes(v)) {
+			Vertice o = oposto(v, as);
+			if (o.visitado == 0) {
+				return distanciaDfsVertices(o, w) + as.valor;
+			}
+		}
+		return 0;
+	}
+	public Map<Vertice, Integer> distanciaBfs(Vertice v) {
+		// marcar todos como não visitado
+		for(Vertice x: vertices()) {
+			x.visitado = 0;
+		}
+		v.visitado = -1;
+		// Guardar as distancias
+		Map<Vertice, Integer> distancias = new HashMap<>();
+		distancias.put(v, 0);
+		// criar fila e colocar o primeiro elemento
+		Deque<Vertice> fila = new LinkedList<Vertice>();
+		fila.add(v);
+		// iterar sobre a fila
+		while(!fila.isEmpty()) {
+			// pegar o primeiro da fila
+			Vertice x = fila.remove();
+			// Pegar os vertices opostos
+			for(Aresta as: arestasIncidentes(x)) {
+				Vertice o = oposto(x, as);
+				// adicionar vertices adjacentes não visitados a lista
+				if(o.visitado != -1) {
+					distancias.put(o, distancias.get(x)+as.valor);
+					o.visitado = -1;
+					fila.add(o);
+				}
+			}
+			x.visitado = 1;
+		}
+		return distancias;
 	}
 }

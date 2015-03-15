@@ -1,9 +1,13 @@
 package edu.ifrn.tads.ednl;
 
 public class Aresta {
-	public Object valor;
+	public int valor;
 	
-	public Aresta (Object v) {
+	public Aresta () {
+		valor = 1;
+	}
+	
+	public Aresta (int v) {
 		valor = v;
 	}
 }
